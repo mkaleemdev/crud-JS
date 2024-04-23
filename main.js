@@ -6,7 +6,8 @@ let dob = document.querySelector("#dob");
 let tableBody = document.querySelector("#tableBody");
 let btnSubmit = document.querySelector("#btnSubmit");
 
-const crudData = JSON.parse(localStorage.getItem("curds")) || [];
+let crudData = JSON.parse(localStorage.getItem("curds")) || [];
+let copyData = [...crudData];
 
 let editIndex = null;
 
@@ -14,24 +15,28 @@ let editIndex = null;
 const bindData = () => {
   let html = "";
 
-  crudData.forEach((item, index) => {
-    html += `
-                <tr id="curdTR"> 
-                     <td>${index + 1}</td>
-                     <td>${item.name}</td>
-                     <td>${item.dob}</td>
-                     <td>${item.mobNo}</td>
-                     <td>${item.email}</td>
-                     <td>${item.course}</td>
-                     <td>
-                          <button class="btn btn-secondary" onclick="editData(${index})"><i class="bi bi-pencil-square"></i></button>
-                          <button class="btn btn-danger"  onclick="delData(${index})"><i class="bi bi-trash3"></i></button>
-                     </td>
-                </tr>
-               `;
-    localStorage.setItem("curds", JSON.stringify(crudData));
-  });
-  tableBody.innerHTML = html;
+  if (copyData.length != 0) {
+    copyData.forEach((item, index) => {
+      html += `
+                  <tr> 
+                       <td>${index + 1}</td>
+                       <td>${item.name}</td>
+                       <td>${item.dob}</td>
+                       <td>${item.mobNo}</td>
+                       <td>${item.email}</td>
+                       <td>${item.course}</td>
+                       <td>
+                            <button class="btn btn-secondary" onclick="editData(${index})"><i class="bi bi-pencil-square"></i></button>
+                            <button class="btn btn-danger"  onclick="delData(${index})"><i class="bi bi-trash3"></i></button>
+                       </td>
+                  </tr>
+                 `;
+      localStorage.setItem("curds", JSON.stringify(copyData));
+    });
+    tableBody.innerHTML = html;
+  } else {
+    tableBody.innerHTML = `<p class="text-danger mt-3">Record not found*</p>`;
+  }
 };
 bindData();
 
@@ -39,7 +44,7 @@ bindData();
 const onSubmit = () => {
   btnSubmit.innerHTML = "Submit";
   if (editIndex !== null) {
-    crudData[editIndex] = {
+    copyData[editIndex] = {
       name: name.value,
       dob: dob.value,
       mobNo: mobNo.value,
@@ -55,7 +60,7 @@ const onSubmit = () => {
       email: email.value,
       course: course.value,
     };
-    crudData.push(data);
+    copyData.push(data);
   }
 
   name.value = "";
@@ -69,18 +74,18 @@ const onSubmit = () => {
 
 // delete data crud =======
 const delData = (index) => {
-  crudData.splice(index, 1);
+  copyData.splice(index, 1);
   bindData();
 };
 
 // edit data ===============
 const editData = (index) => {
   btnSubmit.innerHTML = "Update";
-  name.value = crudData[index].name;
-  dob.value = crudData[index].dob;
-  mobNo.value = crudData[index].mobNo;
-  email.value = crudData[index].email;
-  course.value = crudData[index].course;
+  name.value = copyData[index].name;
+  dob.value = copyData[index].dob;
+  mobNo.value = copyData[index].mobNo;
+  email.value = copyData[index].email;
+  course.value = copyData[index].course;
 
   editIndex = index;
 };
@@ -89,20 +94,98 @@ const editData = (index) => {
 const searchFun = () => {
   let searchInput = document.querySelector("#searchInput").value;
   searchInput = searchInput.toLowerCase();
-  let rows = document.querySelectorAll("#tableBody tr");
 
-  rows.forEach(function (row) {
-    let cells = row.querySelectorAll("td");
-    let found = false;
-    cells.forEach(function (cell) {
-      if (cell.textContent.toLowerCase().includes(searchInput)) {
-        found = true;
-      }
-    });
-    if (found) {
-      row.style.display = "";
-    } else {
-      row.style.display = "none";
-    }
+  copyData = crudData.filter((item) => {
+    return (
+      item.name.toLowerCase().includes(searchInput) ||
+      item.dob.toLowerCase().includes(searchInput) ||
+      item.mobNo.toLowerCase().includes(searchInput) ||
+      item.email.toLowerCase().includes(searchInput) ||
+      item.course.toLowerCase().includes(searchInput)
+    );
   });
+
+  bindData();
+};
+
+// pagination =======
+const total_recordsTr = document.querySelectorAll("#tableBody tr");
+const recordPar_page = 5;
+let pageNumber = 1;
+const total_records = total_recordsTr.length;
+const totalPage = Math.ceil(total_records / recordPar_page);
+
+generatePage();
+DisplayRecord();
+function DisplayRecord() {
+  let startIndex = (pageNumber - 1) * recordPar_page;
+  let endIndex = startIndex + (recordPar_page - 1);
+  let statement = "";
+
+  for (let i = startIndex; i <= endIndex; i++) {
+    statement += `<tr> ${total_recordsTr[i].innerHTML}</tr>`;
+  }
+  tableBody.innerHTML = statement;
+
+  document.querySelectorAll(".dynamicActive").forEach((item) => {
+    item.classList.remove("active");
+  });
+  document.querySelector(`#page${pageNumber}`).classList.add("active");
+
+  if (pageNumber == 1) {
+    document.querySelector("#prevBtn").parentElement.classList.add("disabled");
+  } else {
+    document
+      .querySelector("#prevBtn")
+      .parentElement.classList.remove("disabled");
+  }
+
+  if (pageNumber == totalPage) {
+    document.querySelector("#nextBtn").parentElement.classList.add("disabled");
+  } else {
+    document
+      .querySelector("#nextBtn")
+      .parentElement.classList.remove("disabled");
+  }
+}
+
+function generatePage() {
+  let prevBtn = `<li class="page-item">
+  <a class="page-link" id="prevBtn" onclick="prevBtn()" href="javascript:void(0);" aria-label="Previous">
+    <span aria-hidden="true">&laquo;</span>
+  </a>
+</li>`;
+  let nextBtn = ` <li class="page-item">
+<a class="page-link" id="nextBtn" onclick="nextBtn()" href="javascript:void(0);" aria-label="Next">
+  <span aria-hidden="true">&raquo;</span>
+</a>
+</li>`;
+
+  let pageButton = "";
+  let activeClass = "";
+  for (let i = 1; i <= totalPage; i++) {
+    if (i == 1) {
+      activeClass = "active";
+    } else {
+      activeClass = "";
+    }
+    pageButton += `<li class="page-item dynamicActive ${activeClass}" id="page${i}"><a class="page-link" onclick="page${i}" href="javascript:void(0);">${i}</a></li>`;
+  }
+  document.querySelector(
+    "#pagination"
+  ).innerHTML = `${prevBtn} ${pageButton} ${nextBtn}`;
+}
+
+const prevBtn = () => {
+  pageNumber--;
+  DisplayRecord();
+};
+const nextBtn = () => {
+  pageNumber++;
+  DisplayRecord();
+};
+
+const page = (index) => {
+  pageNumber = parseInt(index);
+  DisplayRecord();
 };
