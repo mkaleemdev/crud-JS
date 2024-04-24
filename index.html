@@ -55,7 +55,15 @@
 
     <section>
         <div class="container">
-            <div class="row justify-content-end">
+            <div class="row justify-content-between">
+                <div class="col-1">
+                    <select class="form-select" id="recordSize" aria-label="Default select example">
+                        <option selected value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
                 <div class="col-3 mb-3">
                     <input class="form-control" type="search" id="searchInput" onkeyup="searchFun()" placeholder="Search">
                 </div>
@@ -78,28 +86,15 @@
         </div>
     </section>
 
-    <section>
+    <section class="mb-5">
         <div class="container">
             <div class="row">
                 <div class="col-6">
-                    <p>Showing 1 to 10 of 14</p>
+                    <p id="pageDetail"></p>
                 </div>
                 <div class="col-6 d-flex justify-content-end">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination" id="pagination">
-                          <!-- <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Previous">
-                              <span aria-hidden="true">&laquo;</span>
-                            </a>
-                          </li>
-                          <li class="page-item"><a class="page-link" href="#">1</a></li>
-                          <li class="page-item"><a class="page-link" href="#">2</a></li>
-                          <li class="page-item"><a class="page-link" href="#">3</a></li>
-                          <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Next">
-                              <span aria-hidden="true">&raquo;</span>
-                            </a>
-                          </li> -->
                         </ul>
                       </nav>
                 </div>

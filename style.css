@@ -1,4 +1,6 @@
 .inpLabel{
     margin: 5px;
 }
-
+.pagination .disabled{
+    cursor: not-allowed;
+}

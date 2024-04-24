@@ -110,19 +110,20 @@ const searchFun = () => {
 
 // pagination =======
 const total_recordsTr = document.querySelectorAll("#tableBody tr");
-const recordPar_page = 5;
+let recordPar_page = 5;
 let pageNumber = 1;
 const total_records = total_recordsTr.length;
-const totalPage = Math.ceil(total_records / recordPar_page);
+let totalPage = Math.ceil(total_records / recordPar_page);
+const recordSize = document.querySelector("#recordSize")
 
 generatePage();
 DisplayRecord();
 function DisplayRecord() {
   let startIndex = (pageNumber - 1) * recordPar_page;
-  let endIndex = startIndex + (recordPar_page - 1);
+  let endIndex = startIndex + recordPar_page - 1;
   let statement = "";
 
-  for (let i = startIndex; i <= endIndex; i++) {
+  for (let i = startIndex; i <= endIndex && i < total_records; i++) {
     statement += `<tr> ${total_recordsTr[i].innerHTML}</tr>`;
   }
   tableBody.innerHTML = statement;
@@ -147,19 +148,21 @@ function DisplayRecord() {
       .querySelector("#nextBtn")
       .parentElement.classList.remove("disabled");
   }
+
+  document.querySelector("#pageDetail").innerHTML = `Showing ${startIndex + 1} to ${endIndex + 1} of ${total_records}`
 }
 
 function generatePage() {
   let prevBtn = `<li class="page-item">
-  <a class="page-link" id="prevBtn" onclick="prevBtn()" href="javascript:void(0);" aria-label="Previous">
-    <span aria-hidden="true">&laquo;</span>
-  </a>
-</li>`;
+                    <a class="page-link" id="prevBtn" onclick="prevBtn()" href="javascript:void(0);" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                   </a>
+                </li>`;
   let nextBtn = ` <li class="page-item">
-<a class="page-link" id="nextBtn" onclick="nextBtn()" href="javascript:void(0);" aria-label="Next">
-  <span aria-hidden="true">&raquo;</span>
-</a>
-</li>`;
+                      <a class="page-link" id="nextBtn" onclick="nextBtn()" href="javascript:void(0);" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                </li>`;
 
   let pageButton = "";
   let activeClass = "";
@@ -169,23 +172,33 @@ function generatePage() {
     } else {
       activeClass = "";
     }
-    pageButton += `<li class="page-item dynamicActive ${activeClass}" id="page${i}"><a class="page-link" onclick="page${i}" href="javascript:void(0);">${i}</a></li>`;
+    pageButton += `<li class="page-item dynamicActive ${activeClass}" id="page${i}"><a class="page-link" onclick="page(${i})" href="javascript:void(0);">${i}</a></li>`;
   }
   document.querySelector(
     "#pagination"
   ).innerHTML = `${prevBtn} ${pageButton} ${nextBtn}`;
 }
 
+// pagination prev Button
 const prevBtn = () => {
   pageNumber--;
   DisplayRecord();
 };
+// pagination next Button
 const nextBtn = () => {
   pageNumber++;
   DisplayRecord();
 };
-
+// pagination page
 const page = (index) => {
   pageNumber = parseInt(index);
   DisplayRecord();
 };
+
+recordSize.addEventListener('change', function (e) {
+  recordPar_page = parseInt(recordSize.value)
+  totalPage = Math.ceil(total_records / recordPar_page);
+  pageNumber = 1
+  generatePage();
+  DisplayRecord();
+})
