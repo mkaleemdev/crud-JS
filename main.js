@@ -11,6 +11,131 @@ let copyData = [...crudData];
 
 let editIndex = null;
 
+btnSubmit.addEventListener('click', function (e) {
+
+  if (formValidation()) {
+    addCrud();
+  } else {
+    console.log("Form validation failed");
+  }
+});
+
+const formCheck = value => value === '' ? false : true;
+
+const isRequired = value => value === '' ? false : true;
+const isBetween = (length, min, max) => length < min || length > max ? false : true;
+
+const isEmailValid = (email) => {
+  const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return regex.test(email);
+};
+const isMobileValid = (mobNo) => {
+  const regex = /^(\(?([\d \-\)\–\+\/\(.]+){8}\)?([ .\-–\/]?)([\d]+))$/;
+  return regex.test(mobNo)
+}
+
+
+const checkName = () => {
+  let valid = false;
+  const min = 3,
+    max = 25;
+  const stuName = name.value;
+
+  if (!isRequired(stuName)) {
+    showError(name, 'Username cannot be blank.');
+  } else if (!isBetween(stuName.length, min, max)) {
+    showError(name, `Username must be between ${min} and ${max} characters.`)
+  } else {
+    showSuccess(name);
+    valid = true;
+  }
+  return valid;
+}
+const checkMobile = () => {
+  let valid = false;
+  const stuMobNo = mobNo.value;
+  if (!isRequired(stuMobNo)) {
+    showError(mobNo, 'Mobile No cannot be blank.');
+  } else if (!isMobileValid(stuMobNo)) {
+    showError(mobNo, 'Mobile is not valid.')
+  } else {
+    showSuccess(mobNo);
+    valid = true;
+  }
+  return valid;
+}
+const checkEmail = () => {
+  let valid = false;
+  const stuEmail = email.value;
+  if (!isRequired(stuEmail)) {
+    showError(email, 'Email cannot be blank.');
+  } else if (!isEmailValid(stuEmail)) {
+    showError(email, 'Email is not valid.')
+  } else {
+    showSuccess(email);
+    valid = true;
+  }
+  return valid;
+}
+const checkDob = () => {
+  let valid = false;
+  const stuDOB = dob.value;
+
+  if (!isRequired(stuDOB)) {
+    showError(dob, 'D.O.B cannot be blank.');
+  } else {
+    showSuccess(dob);
+    valid = true;
+  }
+  return valid;
+}
+const checkCourse = () => {
+  let valid = false;
+  const stuCourse = course.value;
+  if (!isRequired(stuCourse)) {
+    showError(course, 'Course cannot be blank.');
+  } else {
+    showSuccess(course);
+    valid = true;
+  }
+  return valid;
+}
+
+// show error ===========
+function showError(input, message) {
+  const formField = input.parentElement;
+
+  formField.classList.remove('success');
+  formField.classList.add('error');
+
+  const error = formField.querySelector('small');
+  error.textContent = message;
+}
+
+// show success ===========
+const showSuccess = (input) => {
+  const formField = input.parentElement;
+
+  formField.classList.remove('error');
+  formField.classList.add('success');
+
+  const error = formField.querySelector('small');
+  error.textContent = '';
+}
+
+// form validation ======
+const formValidation = () => {
+  const isNameValid = checkName();
+  const isMobileValid = checkMobile();
+  const isEmailValid = checkEmail();
+  const isCourseValid = checkCourse();
+  const isDobValid = checkDob();
+
+  return isNameValid && isMobileValid && isEmailValid && isCourseValid && isDobValid;
+};
+
+
+// crud oprartion =====$$$$$$$$$$$$$$$$$$$$#########
 // bind data ==================
 const bindData = () => {
   let html = "";
@@ -41,7 +166,7 @@ const bindData = () => {
 bindData();
 
 // add crud data =========
-const onSubmit = () => {
+let addCrud = () => {
   btnSubmit.innerHTML = "Submit";
   if (editIndex !== null) {
     copyData[editIndex] = {
@@ -52,6 +177,7 @@ const onSubmit = () => {
       course: course.value,
     };
     editIndex = null;
+    showToast(editMsg, 'success');
   } else {
     const data = {
       name: name.value,
@@ -76,6 +202,7 @@ const onSubmit = () => {
 const delData = (index) => {
   copyData.splice(index, 1);
   bindData();
+  showToast(successMsg, 'success');
 };
 
 // edit data ===============
@@ -116,7 +243,7 @@ const total_records = total_recordsTr.length;
 let totalPage = Math.ceil(total_records / recordPar_page);
 const recordSize = document.querySelector("#recordSize")
 
-generatePage();
+GeneratePage();
 DisplayRecord();
 function DisplayRecord() {
   let startIndex = (pageNumber - 1) * recordPar_page;
@@ -152,7 +279,7 @@ function DisplayRecord() {
   document.querySelector("#pageDetail").innerHTML = `Showing ${startIndex + 1} to ${endIndex + 1} of ${total_records}`
 }
 
-function generatePage() {
+function GeneratePage() {
   let prevBtn = `<li class="page-item">
                     <a class="page-link" id="prevBtn" onclick="prevBtn()" href="javascript:void(0);" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
@@ -199,6 +326,6 @@ recordSize.addEventListener('change', function (e) {
   recordPar_page = parseInt(recordSize.value)
   totalPage = Math.ceil(total_records / recordPar_page);
   pageNumber = 1
-  generatePage();
+  GeneratePage();
   DisplayRecord();
 })
