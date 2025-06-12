@@ -38,6 +38,33 @@ A dynamic and interactive web application built with **HTML**, **CSS**, and **Va
 
 ---
 
+## 📋 Form Fields
+
+- 🧑 Name (text, required)
+- 📱 Mobile Number (10-digit, required)
+- 📧 Email (valid format, required)
+- 🎂 Date of Birth (required)
+- 🎓 Branch (dropdown or input, required)
+
+---
+
+## 🧪 How to Use
+
+1. Fill out the form and click **Submit** to add a new entry.
+2. Use **Search Bar** to filter by name, email, or branch.
+3. Use **Pagination Controls** to navigate entries.
+4. Use **Edit/Delete** buttons to update or remove entries.
+5. All data is saved in **localStorage** and stays even after page reload.
+
+---
+
+## 🗃️ Data Storage
+
+- All form entries are stored in the browser's `localStorage` in JSON format.
+- Automatically loads stored data on page refresh.
+
+---
+
 
 
 
