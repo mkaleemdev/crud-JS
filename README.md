@@ -24,6 +24,7 @@ A dynamic and interactive web application built with **HTML**, **CSS**, and **Va
 
 ## 📸 Screenshots
 
+![Screenshot 2025-06-12 225152](https://github.com/user-attachments/assets/addd6b47-d7be-4711-b330-d71263bad82c)
 
 
 ---
